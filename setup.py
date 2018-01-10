@@ -9,7 +9,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='vali',
-    version='0.1.0',
+    version='1.0.0',
     description='Easy Type Checking',
     # long_description=long_description,
     url='https://github.com/llamicron/vali',
