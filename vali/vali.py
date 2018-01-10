@@ -30,9 +30,13 @@ def validate(types, raise_on_failure=False, return_failures=False):
             if raise_on_failure:
                 raise ValidationError(
                     "Validation Failed: type of given value (%s) does not match the given type (%s)" % (
-                    type(value), given_type))
+                        type(value), given_type))
             # Default behavior
             return False
     if failed:
         return failed
     return True
+
+
+if __name__ == "__main__":
+    pass

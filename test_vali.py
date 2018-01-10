@@ -1,7 +1,7 @@
 import unittest
 import pytest
 
-from .vali import validate, ValidationError
+from vali import validate, ValidationError
 
 
 class TestVali(unittest.TestCase):
