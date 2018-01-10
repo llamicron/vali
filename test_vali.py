@@ -15,43 +15,49 @@ class TestVali(unittest.TestCase):
             validate(('tuple', 'tuple'))
             validate(54)
 
-    def test_keys_have_to_be_a_valid_type(self):
-        with self.assertRaises(TypeError):
-            validate({
-                'not': 'string',
-                'a': 15,
-                'valid': 14.8,
-                'type': ('first', 'second'),
-                'in': {'key': 'value'},
-                'the_keys': ['first', 'second'],
-            })
+    def test_values_must_be_lists(self):
+        with self.assertRaises(ValueError):
+            validate({'string': []})
+            validate({'string': int})
+            validate({'string': (int, 'required')})
+            validate({'string': None})
+            validate({'string': False})
 
     def test_it_returns_false_for_bad_validations(self):
         results = validate({
-            str: 14,
-            int: 'string',
-            tuple: ['not', 'a', 'tuple'],
-            list: ('not', 'a', 'list'),
+            14: [str],
+            'string': [int],
+            '': ['required'],
+            None: ['required'],
+            ('not', 'a', 'list'): [bool],
         })
         assert not results
 
     def test_it_raises_an_exception_if_chosen(self):
         with self.assertRaises(ValidationError):
             results = validate({
-                str: 14,
-                int: 'string',
-                tuple: ['not', 'a', 'tuple'],
-                list: ('not', 'a', 'list'),
+                14: [str],
+                'string': [int],
+                'not a tuple': [tuple],
+                None: ['required'],
             }, raise_on_failure=True)
 
     def test_it_returns_failed_validations_if_chosen(self):
         results = validate({
-            int: 45,
-            str: 'not a failure',
-            tuple: 'is a failure',
-            list: 'is another failure'
+            45: [int, 'required'],
+            'not a failure': [str],
+            'is a failure': [tuple],
+            'is another failure': [list]
         }, return_failures=True)
         assert results
         assert type(results) is list
         assert len(results) == 2
         assert type(results[0]) is tuple
+
+    def test_good_values(self):
+        assert validate({
+            45: [int, 'required'],
+            'string': [str, 'required'],
+            '': [str],
+            ('f', 's'): [tuple]
+        })
