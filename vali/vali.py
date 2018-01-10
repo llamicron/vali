@@ -21,22 +21,34 @@ def validate(types, raise_on_failure=False, return_failures=False):
     # AKA validate
     failed = []
     for given_type, value in types.items():
-        if not type(value) is given_type:
-            # Failed Validation
+        # If the type is not a list, but we have a list of values:
+        if given_type is not list and type(value) is list:
+            for item in types.get(given_type):
+                validate_value(return_failures, raise_on_failure, failed, given_type, item)
 
-            if return_failures:
-                failed.append((given_type, value))
-                continue
-            if raise_on_failure:
-                raise ValidationError(
-                    "Validation Failed: type of given value (%s) does not match the given type (%s)" % (
-                        type(value), given_type))
-            # Default behavior
-            return False
+        elif type(value) is not given_type:
+            # Failed Validation
+            validate_value(return_failures, raise_on_failure, failed, given_type, value)
+
     if failed:
         return failed
-    return True
+
+
+def validate_value(return_failures, raise_on_failure, failed, given_type, value):
+    if return_failures:
+        failed.append((given_type, value))
+        return
+
+    if raise_on_failure:
+        if given_type != type(value):
+            raise ValidationError(
+                "Validation Failed: type of given value (%s) does not match the given type (%s)" % (
+                    type(value), given_type))
+    # Default behavior
+    return False
 
 
 if __name__ == "__main__":
-    pass
+    validate({str: "Validate"}, raise_on_failure=True)
+    validate({str: ["Hello", "World"]}, raise_on_failure=True)
+    validate({int: [42]}, raise_on_failure=True)
