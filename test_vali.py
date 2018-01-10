@@ -3,6 +3,7 @@ import pytest
 
 from .vali import validate, ValidationError
 
+
 class TestVali(unittest.TestCase):
     def setUp(self):
         pass
@@ -54,4 +55,3 @@ class TestVali(unittest.TestCase):
         assert type(results) is list
         assert len(results) == 2
         assert type(results[0]) is tuple
-
