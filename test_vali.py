@@ -1,8 +1,7 @@
 import unittest
 import pytest
 
-from vali import validate
-from custom_exceptions import ValidationError
+from .vali import validate, ValidationError
 
 class TestVali(unittest.TestCase):
     def setUp(self):
@@ -44,5 +43,15 @@ class TestVali(unittest.TestCase):
                 list: ('not', 'a', 'list'),
             }, raise_on_failure=True)
 
-if __name__ == '__main__':
-    pytest.main()
+    def test_it_returns_failed_validations_if_chosen(self):
+        results = validate({
+            int: 45,
+            str: 'not a failure',
+            tuple: 'is a failure',
+            list: 'is another failure'
+        }, return_failures=True)
+        assert results
+        assert type(results) is list
+        assert len(results) == 2
+        assert type(results[0]) is tuple
+

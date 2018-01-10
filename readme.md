@@ -3,31 +3,72 @@
 ```python
 from vali import validate
 
-foo = 'string'
-bar = 16
-baz = ('string', 3)
+results = validate({
+    int: 45,
+    str: 'string',
+    float: 42.9,
+    tuple: ('first', 'second')
+})
 
-results = validate(dict(
-    'str': foo,
-    'int': bar,
-    'tuple': baz
-))
+print(results) # True
 
-if not results:
-    print("Ahhh")
+results = validate({
+    int: '45',
+    str: ('first', 'second'),
+    float: ['list', 'of', 'items'],
+    tuple: 45
+})
+
+print(results) # False
 ```
 
-It can also throw an exception if you want:
+## Additional Options
+You can add two more paramaters to `validate`.
+### `return_failures`
 ```python
-from vali import validate
+to_validate = {
+    int: 'not an int',
+    list: 100
+}
+results = validate(to_validate, return_failures=True)
 
-foo = 'string'
-bar = 16
-baz = ('string', 3)
+print(results)
+```
 
-results = validate(dict(
-    'tuple': foo, # This will throw an exception
-    'int': bar,
-    'tuple': baz
-), return_type='Exception')
+returns a list of tuples, containing the type and the value
+
+```python
+[(<class 'int'>, 'not an int'), (<class 'list'>, 100)]
+```
+
+### `raise_on_failure`
+```python
+to_validate = {
+    int: 'not an int'
+}
+
+validate(to_validate, raise_on_failure=True) # This will throw a ValidationError
+```
+Will throw a `ValidationError`. Note: `ValidationError` extends `ValueError`. That may be useful when catching this error.
+
+## Notes
+The entended way for this to be used is like so:
+```python
+items = {
+    int: 14,
+    str: 'some string'
+}
+
+if not validate(items): # Validation did not pass
+    # Deal with this
+```
+But remember, if you have the `return_failures` set to `True`, then that test will pass. See here:
+```python
+items = {
+    int: 14,
+    str: 'some string'
+}
+
+if not validate(items, return_failures): # Validation DID pass
+    # Continue
 ```
