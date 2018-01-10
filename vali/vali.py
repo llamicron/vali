@@ -1,6 +1,7 @@
 class ValidationError(ValueError):
     pass
 
+
 def validate(types, raise_on_failure=False, return_failures=False):
     # Make sure they give us a dict
     if not isinstance(types, dict):
@@ -22,7 +23,9 @@ def validate(types, raise_on_failure=False, return_failures=False):
                 failed.append((given_type, value))
                 continue
             if raise_on_failure:
-                raise ValidationError("Validation Failed: type of given value (%s) does not match the given type (%s)" % (type(value), given_type))
+                raise ValidationError(
+                    "Validation Failed: type of given value (%s) does not match the given type (%s)" % (
+                    type(value), given_type))
             # Default behavior
             return False
     if failed:
